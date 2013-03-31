@@ -82,6 +82,6 @@ open(GOURCE_LOG, ">$combined_log_path");
 print GOURCE_LOG @combined_log;
 close GOURCE_LOG;
 
-`gource $combined_log_path -s ${seconds_per_day}  -i 0 -$RESOLUTION --highlight-users --highlight-dirs --hide mouse --key --stop-at-end --user-image-dir $avatar_output_dir --output-framerate 60 --output-ppm-stream - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -crf 1 -threads 0 -bf 0 $outfile`;
+`gource $combined_log_path --background-image ~/src/success/success.png -s ${seconds_per_day}  -i 0 -$RESOLUTION --highlight-users --highlight-dirs --hide mouse --key --stop-at-end --user-image-dir $avatar_output_dir --output-framerate 60 --output-ppm-stream - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -crf 1 -threads 0 -bf 0 $outfile`;
 unlink($combined_log_path);
 
