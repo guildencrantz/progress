@@ -20,12 +20,12 @@ mkdir($avatar_output_dir) unless -d $avatar_output_dir;
 
 # TODO: Dynamicize
 my $repo = 'auth_engine_aggregator';
-my $since = DateTime->now->truncate(to => "hour")->subtract_duration(DateTime::Duration->new(days => $total_days))->epoch;
+my $since = '14.days';
 
 my %processed_authors;
 my @combined_log;
 
-open(GIT_LOG, q/git log --pretty=format:"%at|%ae|%an" --name-status |/)
+open(GIT_LOG, "git log --pretty=format:'%at|%ae|%an' --name-status --since ${since} |")
   or die "Failed to read git-log: $!\n";
 
 my $timestamp;
@@ -60,7 +60,7 @@ while (<GIT_LOG>) {
       unlink($author_image_file);
       next;
     }
-  } elsif ($timestamp >= $since) {
+  } else {
     chomp;
     my ($status, $file) = split '\s+';
     push @combined_log, sprintf(
