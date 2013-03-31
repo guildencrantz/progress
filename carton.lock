@@ -1,0 +1,169 @@
+{
+   "modules" : {
+      "Git::Repository" : {
+         "dist" : "Git-Repository-1.302",
+         "mymeta" : {
+            "abstract" : "Perl interface to Git repositories",
+            "author" : [
+               "Philippe Bruhat (BooK) <book@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Dist::Zilla version 4.300020, CPAN::Meta::Converter version 2.120921, CPAN::Meta::Converter version 2.130880",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Git-Repository",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "File::Find" : "0",
+                     "File::Path" : "0",
+                     "Test::More" : "0.88",
+                     "constant" : "0",
+                     "overload" : "0"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.30"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Carp" : "0",
+                     "Config" : "0",
+                     "Cwd" : "0",
+                     "Exporter" : "0",
+                     "File::Spec" : "0",
+                     "File::Temp" : "0",
+                     "IO::Handle" : "0",
+                     "Scalar::Util" : "0",
+                     "System::Command" : "0",
+                     "Test::Builder" : "0",
+                     "strict" : "0",
+                     "warnings" : "0"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "bugtracker" : {
+                  "web" : "http://rt.cpan.org/NoAuth/Bugs.html?Dist=Git-Repository"
+               },
+               "repository" : {
+                  "url" : "http://github.com/book/Git-Repository.git"
+               }
+            },
+            "version" : "1.302"
+         },
+         "name" : "Git::Repository",
+         "pathname" : "B/BO/BOOK/Git-Repository-1.302.tar.gz",
+         "provides" : {
+            "Git::Repository" : {
+               "file" : "Git/Repository.pm",
+               "version" : "1.302"
+            },
+            "Git::Repository::Command" : {
+               "file" : "Git/Repository/Command.pm",
+               "version" : "1.302"
+            },
+            "Git::Repository::Log" : {
+               "file" : "Git/Repository/Log.pm",
+               "version" : "1.302"
+            },
+            "Git::Repository::Log::Iterator" : {
+               "file" : "Git/Repository/Log/Iterator.pm",
+               "version" : "1.302"
+            },
+            "Git::Repository::Plugin" : {
+               "file" : "Git/Repository/Plugin.pm",
+               "version" : "1.302"
+            },
+            "Git::Repository::Plugin::Log" : {
+               "file" : "Git/Repository/Plugin/Log.pm",
+               "version" : "1.302"
+            },
+            "Test::Git" : {
+               "file" : "Test/Git.pm",
+               "version" : "1.302"
+            }
+         },
+         "target" : "Git::Repository",
+         "version" : "1.302"
+      },
+      "System::Command" : {
+         "dist" : "System-Command-1.09",
+         "mymeta" : {
+            "abstract" : "Object for running system commands",
+            "author" : [
+               "Philippe Bruhat (BooK) <book@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Build version 0.3901, CPAN::Meta::Converter version 2.130880",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "System-Command",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "Test::More" : "0"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "Module::Build" : "0.38"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Carp" : "0",
+                     "Config" : "0",
+                     "Cwd" : "0",
+                     "IO::Handle" : "0",
+                     "IPC::Open3" : "0",
+                     "List::Util" : "0",
+                     "POSIX" : "0",
+                     "Symbol" : "0"
+                  }
+               }
+            },
+            "provides" : {
+               "System::Command" : {
+                  "file" : "lib/System/Command.pm",
+                  "version" : "1.09"
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ],
+               "repository" : {
+                  "url" : "http://github.com/book/System-Command"
+               }
+            },
+            "version" : "1.09"
+         },
+         "name" : "System::Command",
+         "pathname" : "B/BO/BOOK/System-Command-1.09.tar.gz",
+         "provides" : {
+            "System::Command" : {
+               "file" : "System/Command.pm",
+               "version" : "1.09"
+            }
+         },
+         "target" : "System::Command",
+         "version" : "1.09"
+      }
+   },
+   "version" : "0.9"
+}
