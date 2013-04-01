@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-use FindBin;
-use local::lib "$FindBin::Bin/local";
+use FindBin qw ($RealBin);
+use local::lib "$RealBin/local";
 
 use Data::Dumper;
 use DateTime;
@@ -14,21 +14,21 @@ use Git::Repository::Log::Iterator;
 use Git::Repository;
 use LWP::Simple;
 
-my $repositories;
-
-print Dumper($@);
+my @repositories;
+my $repo_glob;
 
 GetOptions(
-  'repository' => \$repositories
+  'r|repository=s' => \@repositories,
+  'g|glob=s'       => \$repo_glob
 );
 
-print "repositories: " . Dumper($repositories);
+push(@repositories, glob($repo_glob)) if defined $repo_glob;
 
 my $avatar_size       = 90;
 my $avatar_output_dir = '.gravatars';
 my $outfile = 'gource.mp4';
-#my $RESOLUTION = '1024x768';
-my $RESOLUTION = '640x480';
+my $RESOLUTION = '1024x768';
+#my $RESOLUTION = '640x480';
 my $target_length_seconds = 60;
 my $total_days = 14;
 
@@ -41,7 +41,7 @@ my $since = '14.days';
 my %processed_authors;
 my @combined_log;
 
-foreach my $repo_name ($repositories) {
+foreach my $repo_name (@repositories) {
   my $repo = Git::Repository->new( git_dir => "/home/mhenkel/src/rp/$repo_name/.git" );
 
   my $repo_log_iterator = Git::Repository::Log::Iterator->new($repo, "--name-status", "--since=${since}");
