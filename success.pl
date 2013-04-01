@@ -3,12 +3,26 @@
 use strict;
 use warnings;
 
+use FindBin;
+use local::lib "$FindBin::Bin/local";
+
 use Data::Dumper;
 use DateTime;
 use Digest::MD5 qw(md5_hex);
+use Getopt::Long;
 use Git::Repository::Log::Iterator;
 use Git::Repository;
 use LWP::Simple;
+
+my $repositories;
+
+print Dumper($@);
+
+GetOptions(
+  'repository' => \$repositories
+);
+
+print "repositories: " . Dumper($repositories);
 
 my $avatar_size       = 90;
 my $avatar_output_dir = '.gravatars';
@@ -27,41 +41,43 @@ my $since = '14.days';
 my %processed_authors;
 my @combined_log;
 
-my $repo = Git::Repository->new( git_dir => "/home/mhenkel/src/rp/$repo_name/.git" );
+foreach my $repo_name ($repositories) {
+  my $repo = Git::Repository->new( git_dir => "/home/mhenkel/src/rp/$repo_name/.git" );
 
-my $repo_log_iterator = Git::Repository::Log::Iterator->new($repo, "--name-status", "--since=${since}");
+  my $repo_log_iterator = Git::Repository::Log::Iterator->new($repo, "--name-status", "--since=${since}");
 
-while (my $log = $repo_log_iterator->next) {
-  unless ($processed_authors{$log->author_name}++) {
+  while (my $log = $repo_log_iterator->next) {
+    unless ($processed_authors{$log->author_name}++) {
 
-    my $author_image_file = $avatar_output_dir . '/' . $log->author_name . '.png';
-    if (! -e $author_image_file) {
-      my $grav_url = sprintf(
-        'http://www.gravatar.com/avatar/%s?d=404&size=%i',
-        md5_hex(lc $log->author_email),
-        $avatar_size
-      );
-      my $rc = getstore($grav_url, $author_image_file);
+      my $author_image_file = $avatar_output_dir . '/' . $log->author_name . '.png';
+      if (! -e $author_image_file) {
+        my $grav_url = sprintf(
+          'http://www.gravatar.com/avatar/%s?d=404&size=%i',
+          md5_hex(lc $log->author_email),
+          $avatar_size
+        );
+        my $rc = getstore($grav_url, $author_image_file);
 
-      sleep(1);
+        sleep(1);
 
-      if($rc != 200) {
-        unlink($author_image_file);
-        next;
+        if($rc != 200) {
+          unlink($author_image_file);
+          next;
+        }
       }
     }
-  }
 
-  my @files = split /\n/, $log->extra;
-  foreach (@files) {
-    my ($status, $file) = split /\s+/;
-    push @combined_log, sprintf(
-      "%s|%s|%s|%s\n",
-      $log->author_gmtime,
-      $log->author_name,
-      $status,
-      "${repo_name}/${file}"
-    );
+    my @files = split /\n/, $log->extra;
+    foreach (@files) {
+      my ($status, $file) = split /\s+/;
+      push @combined_log, sprintf(
+        "%s|%s|%s|%s\n",
+        $log->author_gmtime,
+        $log->author_name,
+        $status,
+        "${repo_name}/${file}"
+      );
+    }
   }
 }
 
