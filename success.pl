@@ -43,8 +43,9 @@ my @combined_log;
 
 foreach my $repo_name (@repositories) {
   my $repo = Git::Repository->new( git_dir => "/home/mhenkel/src/rp/$repo_name/.git" );
+  $repo->run('fetch', '--all');
 
-  my $repo_log_iterator = Git::Repository::Log::Iterator->new($repo, "--name-status", "--since=${since}");
+  my $repo_log_iterator = Git::Repository::Log::Iterator->new($repo, "master", "--name-status", "--since=${since}");
 
   while (my $log = $repo_log_iterator->next) {
     unless ($processed_authors{$log->author_name}++) {
@@ -102,7 +103,8 @@ my $actual_days = $first_day_with_data->delta_days($last_day_with_data)->days;
 
 my $seconds_per_day = $target_length_seconds / $actual_days;
 
-`gource $combined_log_path --log-format custom --background-image ~/src/success/success.png -s ${seconds_per_day}  -i 0 -$RESOLUTION --highlight-users --highlight-dirs --hide mouse --key --stop-at-end --user-image-dir $avatar_output_dir --output-framerate 25 --output-ppm-stream - | ffmpeg -y -r 25 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -crf 1 -threads 0 -bf 0 $outfile` or die "Unable to generate movie: $!\n";
+#`gource $combined_log_path --log-format custom --background-image ~/src/success/success.png -s ${seconds_per_day}  -i 0 -$RESOLUTION --highlight-users --highlight-dirs --hide mouse --key --stop-at-end --user-image-dir $avatar_output_dir --output-framerate 25 --output-ppm-stream - | ffmpeg -y -r 25 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -crf 1 -threads 0 -bf 0 $outfile` or die "Unable to generate movie: $!\n";
+`xvfb-run -a -s "-screen 0 ${RESOLUTION}x24" gource $combined_log_path --log-format custom --background-image ~/src/success/success.png -s ${seconds_per_day}  -i 0 -$RESOLUTION --highlight-users --highlight-dirs --hide mouse --key --stop-at-end --user-image-dir $avatar_output_dir --output-framerate 25 --output-ppm-stream - | ffmpeg -y -r 25 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -crf 1 -threads 0 -bf 0 $outfile` or die "Unable to generate movie: $!\n";
 
 print "Done.\n";
 
