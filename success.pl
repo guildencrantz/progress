@@ -63,7 +63,6 @@ foreach my $repo_name (@repositories) {
 
         if($rc != 200) {
           unlink($author_image_file);
-          next;
         }
       }
     }
