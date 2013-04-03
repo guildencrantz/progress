@@ -14,22 +14,30 @@ use Git::Repository::Log::Iterator;
 use Git::Repository;
 use LWP::Simple;
 
-my @repositories;
-my $repo_glob;
 my $after;
+my $avatar_output_dir = '.avatar';
 my $before;
 my $no_fetch;
-my $avatar_output_dir = '.avatar';
 my $no_gravatar;
+my $outfile;
+my $repo_glob;
+my $resolution;
+my $target_length_seconds;
+my $title;
+my @repositories;
 
 GetOptions(
   'a|after=s'      => \$after,
   'b|before=s'     => \$before,
   'd|gravatar_dir' => \$avatar_output_dir,
   'g|glob=s'       => \$repo_glob,
+  'l|length=i'     => \$target_length_seconds,
   'no_fetch'       => \$no_fetch,
   'no_gravatar'    => \$no_gravatar,
+  'o|outfile'      => \$outfile,
+  'resolution=s'   => \$resolution,
   'r|repository=s' => \@repositories,
+  'title=s'        => \$title,
 );
 
 push(@repositories, glob($repo_glob)) if defined $repo_glob;
@@ -38,10 +46,12 @@ my @git_flags;
 push(@git_flags, "--after=${after}") if defined $after;
 push(@git_flags, "--before=${before}") if defined $before;
 
+$target_length_seconds = 60 if ! defined $target_length_seconds;
+$outfile = 'success.mp4';
+$resolution = '1024x768' if ! defined $resolution;
+$title = defined $title ? "--title '$title'" : '';
+
 my $avatar_size       = 90;
-my $outfile = 'gource.mp4';
-my $resolution = '1024x768';
-my $target_length_seconds = 60;
 
 mkdir($avatar_output_dir) unless -d $avatar_output_dir;
 
@@ -54,16 +64,17 @@ foreach my $repo_name (@repositories) {
   my $repo = Git::Repository->new( git_dir => "/home/mhenkel/src/rp/$repo_name/.git" );
   # TODO: Allow passing the remote_branch on the CLI
   my $remote_branch;
+  my $remote_repo;
+  foreach ($repo->run('branch', '-vv')) {
+    # If the local branch isn't in sync with the remote there's a colon
+    # and description of the state difference after the remote branch path
+    if(/master\s+\w+\s+\[(([^\/]+?)\/[^\]\:]+).*?\].+/) {
+      $remote_branch = $1;
+      $remote_repo = $2;
+    }
+  }
   unless(defined $no_fetch) {
     my $remote_repo;
-    foreach ($repo->run('branch', '-vv')) {
-      # If the local branch isn't in sync with the remote there's a colon
-      # and description of the state difference after the remote branch path
-      if(/master\s+\w+\s+\[(([^\/]+?)\/[^\]\:]+).*?\].+/) {
-        $remote_branch = $1;
-        $remote_repo = $2;
-      }
-    }
     defined $remote_repo ? $repo->run('fetch', $remote_repo) : next;
   }
 
@@ -118,7 +129,7 @@ my $actual_days = $first_day_with_data->delta_days($last_day_with_data)->in_unit
 
 my $seconds_per_day = $target_length_seconds / $actual_days;
 
-`xvfb-run -a -s "-screen 0 ${resolution}x24" gource ${combined_log_path} --log-format custom --background-image ~/src/success/success.png -s ${seconds_per_day}  -i 0 -${resolution} --highlight-users --highlight-dirs --hide mouse --key --stop-at-end --user-image-dir ${avatar_output_dir} --output-framerate 25 --output-ppm-stream - | ffmpeg -y -r 25 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset medium -crf 23 -threads 0 -bf 0 ${outfile}` or die "Unable to generate movie: $!\n";
+`xvfb-run -a -s "-screen 0 ${resolution}x24" gource ${combined_log_path} --log-format custom --background-image ~/src/success/success.png -s ${seconds_per_day}  -i 0 -${resolution} --highlight-users --highlight-dirs --hide mouse --key --stop-at-end --user-image-dir ${avatar_output_dir} --output-framerate 25 ${title} --output-ppm-stream - | ffmpeg -y -r 25 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset medium -crf 23 -threads 0 -bf 0 ${outfile}` or die "Unable to generate movie: $!\n";
 
 print "Done.\n";
 
